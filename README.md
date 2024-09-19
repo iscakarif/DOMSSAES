@@ -1,4 +1,4 @@
-Repisitory for the bachelor thesis of Arif Iscak.
+Repository for the bachelor thesis of Arif Iscak.
 
 # Implementation of Domain-Oriented Masking on a Small Scale Advanced Encryption Standard
 
