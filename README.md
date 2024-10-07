@@ -5,8 +5,8 @@ Repository for the bachelor thesis of Arif Iscak.
 ## Goals
 
 ### Implementation of the DOM on a SSAES:
-- [ ] Identify the operations in the provided implementation of the SSAES
-- [ ] Identify the changes to be made to the SSAES.
+- [x] Identify the operations in the provided implementation of the SSAES
+- [x] Identify the changes to be made to the SSAES.
 - [ ] Create a new S-Box module to fit the DOM scheme.
 - [ ] Adjust the SSAES to the changes and add the corresponding register stages.
 - [ ] Simulate the design and verify its correctness.
