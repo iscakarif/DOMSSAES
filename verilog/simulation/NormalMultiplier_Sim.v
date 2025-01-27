@@ -6,27 +6,54 @@ module NormalMultiplier_Sim();
     NormalMultiplier mult (.x(x), .y(y), .result(result));
 
     initial begin
+        x = 2'b00; y = 2'b00;
+        #10;
+        
+        x = 2'b00; y = 2'b01;
+        #10;
+        
+        x = 2'b00; y = 2'b10;
+        #10;
+        
+        x = 2'b00; y = 2'b11;
+        #10;
+        
+        x = 2'b01; y = 2'b00;
+        #10;
+        
+        x = 2'b01; y = 2'b01;
+        #10;
 
         x = 2'b01; y = 2'b10;
         #10;
 
-
+        x = 2'b01; y = 2'b11;
+        #10;
+        
+        x = 2'b10; y = 2'b00;
+        #10;
+        
+        x = 2'b10; y = 2'b01;
+        #10;
+        
+        x = 2'b10; y = 2'b10;
+        #10;
+        
         x = 2'b10; y = 2'b11;
         #10;
-
-
+        
+        x = 2'b11; y = 2'b00;
+        #10;
+        
         x = 2'b11; y = 2'b01;
+        #10;
+        
+        x = 2'b11; y = 2'b10;
         #10;
         
         x = 2'b11; y = 2'b11;
         #10;
         
-        x = 2'b01; y = 2'b01;
-        #10;
-        
-        x = 2'b10; y = 2'b10;
-        #10;
-
         $stop;
     end
 endmodule
