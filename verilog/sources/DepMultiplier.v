@@ -1,64 +1,50 @@
 module DepMultiplier(
-    input clk, reset,
-    input[1:0] Ax, Ay, Bx, By, Z0, Z1,
-    output reg[1:0] Aq, Bq
+    input clk,
+    input[1:0] Ax, Ay, Az, Bx, By, Bz, Z,
+    output[1:0] Aq, Bq
     );
     
-    parameter PHASE1 = 1'b0;
-    parameter PHASE2 = 1'b1;
+    reg[1:0] A_in, B_in, AyAz, ByBz, AxAz, BxBz, AxBzZ, BxAzZ;
+    wire[1:0] Ax_x_Az, Ax_x_Bz, Bx_x_Az, Bx_x_Bz, AxBz_Z, BxAz_Z, Ay_Az, By_Bz;
     
-    reg state;
-    reg[1:0] preAq, preBq, AyZ0, ByZ0, AyZ0_By, ByZ0_Ay;
-    wire[1:0] AxZ0, BxZ0, AxZ0_Z1, BxZ0_Z1, Ay_Z0, By_Z0, AxAy_By, BxBy_Ay;
+    NormalMultiplier mult1 (.x(Ax), .y(Az), .result(Ax_x_Az));
+    NormalMultiplier mult2 (.x(Ax), .y(Bz), .result(Ax_x_Bz));
+    NormalMultiplier mult3 (.x(Bx), .y(Az), .result(Bx_x_Az));
+    NormalMultiplier mult4 (.x(Bx), .y(Bz), .result(Bx_x_Bz));
     
-    NormalMultiplier mult1 (.x(Ax), .y(Z0), .result(AxZ0));
-    NormalMultiplier mult2 (.x(Bx), .y(Z0), .result(BxZ0));
+    assign AxBz_Z = Ax_x_Bz ^ Z;
+    assign BxAz_Z = Bx_x_Az ^ Z;
+    assign Ay_Az = Ay ^ Az;
+    assign By_Bz = By ^ Bz;
     
-    assign AxZ0_Z1 = AxZ0 ^ Z1; 
-    assign BxZ0_Z1 = BxZ0 ^ Z1; 
+    always @(posedge clk) begin
+        
+        A_in <= Ax;
+        B_in <= Bx;
+        AyAz <= Ay_Az;
+        ByBz <= By_Bz;
+        AxAz <= Ax_x_Az;
+        BxBz <= Bx_x_Bz;
+        AxBzZ <= AxBz_Z;
+        BxAzZ <= BxAz_Z;
     
-    assign Ay_Z0 = By ^ Z0;
-    assign By_Z0 = Ay ^ Z0;
-    
-    wire [1:0] AyZ0_By_intermediate, ByZ0_Ay_intermediate;
-    assign AyZ0_By_intermediate = AyZ0 ^ By;
-    assign ByZ0_Ay_intermediate = ByZ0 ^ Ay;
-    
-    NormalMultiplier mult3 (.x(Ax), .y(AyZ0_By_intermediate), .result(AxAy_By));
-    NormalMultiplier mult4 (.x(Bx), .y(ByZ0_Ay_intermediate), .result(BxBy_Ay));
-    
-    
-    always @(posedge clk or posedge reset) begin
-        if (reset) begin
-            state <= PHASE1;
-            preAq <= 2'b0;
-            preBq <= 2'b0;
-            AyZ0 <= 2'b0;
-            ByZ0 <= 2'b0;
-        end else begin
-            case (state) 
-            PHASE1: begin
-            
-                preAq <= AxZ0_Z1;
-                preBq <= BxZ0_Z1;
-                AyZ0 <= Ay_Z0;
-                ByZ0 <= By_Z0;
-                
-                state <= PHASE2;
-            end
-            
-            PHASE2: begin
-                
-                //AyZ0_By <= AyZ0 ^ By;
-                //ByZ0_Ay <= ByZ0 ^ Ay;
-                
-                Aq <= preAq ^ AxAy_By;
-                Bq <= preBq ^ BxBy_Ay;
-                
-                state <= PHASE1;
-            end
-            endcase
-        end
     end
     
+    
+    wire[1:0] AyAz_ByBz, Ax_x_AyBy, Bx_x_AyBy, Ax_Az, Bx_Bz;
+    
+    assign AyAz_ByBz = AyAz ^ ByBz;
+    assign Ax_Az = AxAz ^ AxBzZ;
+    assign Bx_Bz = BxBz ^ BxAzZ;
+    
+    NormalMultiplier mult5 (.x(A_in), .y(AyAz_ByBz), .result(Ax_x_AyBy));
+    NormalMultiplier mult6 (.x(B_in), .y(AyAz_ByBz), .result(Bx_x_AyBy));
+    
+    
+    
+    assign Aq = Ax_Az ^ Ax_x_AyBy;
+    assign Bq = Bx_Bz ^ Bx_x_AyBy;
+    
+    
 endmodule
+
