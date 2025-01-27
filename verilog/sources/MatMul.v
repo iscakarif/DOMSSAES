@@ -4,7 +4,6 @@ module MatMul(
         output[63:0] out
     );
     
-    
     genvar i;
     generate
         for(i = 0;  i < 16; i = i + 1) begin
@@ -19,8 +18,5 @@ module MatMul(
             assign out[(i*4) +: 4] = res_slice;
             
         end
-    endgenerate
-   
-    // transform to GF((2^2)^2): B93F and to GF(2^4): A9CE
-    
+    endgenerate  
 endmodule
