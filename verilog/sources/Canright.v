@@ -3,10 +3,10 @@ module Canright(
     output[3:0] out
     );
     
-    wire[3:0] in_tf, out_tf;
+    wire[3:0] in_tf, out_tf, temp;
     wire[1:0] y0, y1, y1_xor_y0, y1_mul_y0, scaled, y0y1_xor_scaled, inverse, res0, res1;
     
-    MatMul transform_in (.in(in), .matrix(16'h4182), .out(in_tf)); //B93F   //865F  //FCA8 //1234 //8234 //856B //2814
+    MatMul transform_in (.in(in), .matrix(16'h5739), .out(in_tf)); 
     
     assign y1 = in_tf[3:2];
     assign y0 = in_tf[1:0]; 
@@ -25,6 +25,23 @@ module Canright(
     assign out_tf[3:2] = res1;
     assign out_tf[1:0] = res0;
     
-    MatMul transform_out (.in(out_tf), .matrix(16'h2814), .out(out)); //A9CE   //8FBD  //154F //8146 //8765 //8EBD //4182
+    MatMul transform_out (.in(out_tf), .matrix(16'hD754), .out(temp));  // D754 = F6CE * GF(2)-linearmap (BDE7) 
+    
+    assign out[3:0] = temp[3:0] ^ 4'h6; 
      
 endmodule
+
+
+
+/*
+---Matrix Pairs---
+
+5739 & F6CE
+
+31D7 & F93B
+
+1DFB & F368
+
+FB1D & FC92
+
+*/
