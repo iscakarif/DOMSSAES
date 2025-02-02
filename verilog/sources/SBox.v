@@ -1,74 +1,103 @@
 module SBox(
-    input clk, reset,
-    input[1:0] Z0, Z1, Z2, Z3, Z4, Z5,
+    input clk,
+    input[1:0] Az0, Bz0, Az1, Bz1, Az2, Bz2, Z0, Z1, Z2,
     input[3:0] A, B,
     output[3:0] A_out, B_out
     );
     
-    reg[1:0] regA1, regA0, regB1, regB0, Ascl, Bscl, Adep, Bdep; 
+    reg[1:0] ra1, ra0, rb1, rb0, asqsc, bsqsc, doma, domb, ra_1, ra_0, rb_1, rb_0;
     
-    wire[3:0] A_tf, B_tf;
-    wire[1:0] A1, A0, B1, B0, A1_A0, B1_B0, A_scaled, B_scaled, Amul, Bmul;
+    wire[3:0] a_in_tf, b_in_tf, a_out_tf, b_out_tf, a_pretf, b_pretf;
+    wire[1:0] a1, a0, b1, b0, a01, b01, ass, bss, aq, bq, apre, bpre, ainv, binv, a_1, b_1, a_0, b_0;
     
-    MatMul transform_A (.in(A), .matrix(16'h8421), .out(A_tf));
-    MatMul transform_B (.in(B), .matrix(16'h8421), .out(B_tf));
+    MatMul ai_tf (.in(A), .matrix(16'h5739), .out(a_in_tf)); 
+    MatMul bi_tf (.in(B), .matrix(16'h5739), .out(b_in_tf));
     
-    assign A1 = A_tf[3:2];
-    assign A0 = A_tf[1:0];
-    assign B1 = B_tf[3:2];
-    assign B0 = B_tf[1:0];
+    assign a1 = a_in_tf[3:2];
+    assign a0 = a_in_tf[1:0];
+    assign b1 = b_in_tf[3:2];
+    assign b0 = b_in_tf[1:0];
     
-    assign A1_A0 = A1 ^ A0;
-    assign B1_B0 = B1 ^ B0;
+    assign a01 = a1 ^ a0;
+    assign b01 = b1 ^ b0;
     
-    DepMultiplier dep (.clk(clk), .reset(), .Ax(A1), .Ay(B1), .Bx(A0), .By(B0), .Z0(Z0), .Z1(Z1), .Aq(Amul), .Bq(Bmul));
-    SquareScaler sclA (.in(A1_A0), .out(A_scaled)); 
-    SquareScaler sclB (.in(B1_B0), .out(B_scaled));
+    SquareScaler a_sqscale (.in(a01), .out(ass));
+    SquareScaler b_sqscale (.in(b01), .out(bss));
+    DepMultiplier mult01 (.clk(clk), .Ax(a1), .Ay(a0), .Bx(b1), .By(b0), .Az(Az0), .Bz(Bz0), .Z(Z0), .Aq(aq), .Bq(bq));
     
+    always @(posedge clk) begin
     
-    always @(posedge clk) begin        
-        regA1 <= A1;
-        regA0 <= A0;
-        regB1 <= B1;
-        regB0 <= B0;
-        Ascl <= A_scaled;
-        Bscl <= B_scaled;
-        Adep <= Amul;
-        Bdep <= Bmul;  
+        ra1 <= a1;
+        ra0 <= a0;
+        rb1 <= b1;
+        rb0 <= b0;
+        asqsc <= ass;
+        bsqsc <= bss;
+        doma <= aq;
+        domb <= bq;
+    
+    end 
+    
+    wire[1:0] wa1, wa0, wb1, wb0, wass, wbss, waq, wbq;
+    
+    assign waq = doma;
+    assign wbq = domb;
+    assign wa1 = ra1;
+    assign wa0 = ra0;
+    assign wb1 = rb1;
+    assign wb0 = rb0;
+    assign wass = asqsc;
+    assign wbss = bsqsc;
+    
+    assign apre = waq ^ wass;
+    assign bpre = wbq ^ wbss;
+    
+    Inverter inv1 (.in(apre), .out(ainv));
+    Inverter inv2 (.in(bpre), .out(binv));
+    DepMultiplier multOx1 (.clk(clk), .Ax(wa1), .Ay(ainv), .Bx(wb1), .By(binv), .Az(Az1), .Bz(Bz1), .Z(Z1), .Aq(a_1), .Bq(b_1));
+    DepMultiplier multOx0 (.clk(clk), .Ax(ainv), .Ay(wa0), .Bx(binv), .By(wb0), .Az(Az2), .Bz(Bz2), .Z(Z2), .Aq(a_0), .Bq(b_0));
+    
+    always @(posedge clk) begin
+    
+        ra_1 <= a_1;
+        ra_0 <= a_0;
+        rb_1 <= b_1;
+        rb_0 <= b_0;
+    
     end
     
+    wire[1:0] wa_1, wa_0, wb_1, wb_0;
     
-    reg[1:0] Adep_0, Adep_1, Bdep_0, Bdep_1;
+    assign wa_1 = ra_1;
+    assign wa_0 = ra_0;
+    assign wb_1 = rb_1;
+    assign wb_0 = rb_0;
     
-    wire[1:0] Ascl_Amul, Bscl_Bmul, Ainv, Binv, Amul_1, Amul_0, Bmul_1, Bmul_0, A_retf, B_retf;
+    assign a_pretf = {wa_0, wa_1};
+    assign b_pretf = {wb_0, wb_1};
     
-    assign Ascl_Amul = Ascl ^ Adep;
-    assign Bscl_Bmul = Bscl ^ Bdep;
+    MatMul ao_tf (.in(a_pretf), .matrix(16'hD754), .out(a_out_tf));
+    MatMul bo_tf (.in(b_pretf), .matrix(16'hD754), .out(b_out_tf));
     
-    Inverter invert_A (.in(Ascl_Amul), .out(Ainv));
-    Inverter invert_B (.in(Bscl_Bmul), .out(Binv));
+    assign A_out = a_out_tf ^ 4'h6;
+    assign B_out = b_out_tf;
     
-    DepMultiplier dep_A (.clk(clk), .reset(), .Ax(regA1), .Ay(regB1), .Bx(Ainv), .By(Binv), .Z0(Z2), .Z1(Z3), .Aq(Amul_1), .Bq(Amul_0));     
-    DepMultiplier dep_B (.clk(clk), .reset(), .Ax(Ainv), .Ay(Binv), .Bx(regA0), .By(regB0), .Z0(Z4), .Z1(Z5), .Aq(Bmul_1), .Bq(Bmul_0));
+    /*
+    assign apre = aq ^ ass;
+    assign bpre = bq ^ bss;
     
+    Inverter inv1 (.in(apre), .out(ainv));
+    Inverter inv2 (.in(bpre), .out(binv));
+    DepMultiplier multOx1 (.clk(clk), .Ax(a1), .Ay(ainv), .Bx(b1), .By(binv), .Az(Az1), .Bz(Bz1), .Z(Z1), .Aq(a_1), .Bq(b_1));
+    DepMultiplier multOx0 (.clk(clk), .Ax(ainv), .Ay(a0), .Bx(binv), .By(b0), .Az(Az2), .Bz(Bz2), .Z(Z2), .Aq(a_0), .Bq(b_0));
     
-    always @(posedge clk) begin  
-        Adep_0 <= Amul_0;
-        Adep_1 <= Amul_1;
-        Bdep_0 <= Bmul_0;
-        Bdep_1 <= Bmul_1;
-    end
+    assign a_pretf = {a_0, a_1};
+    assign b_pretf = {b_0, b_1};
     
+    MatMul ao_tf (.in(a_pretf), .matrix(16'hD754), .out(a_out_tf));
+    MatMul bo_tf (.in(b_pretf), .matrix(16'hD754), .out(b_out_tf));
     
-    wire[3:0] A_outtf, B_outtf;
-    
-    assign A_outtf = {Adep_1[1:0], Bdep_1[1:0]};
-    assign B_outtf = {Adep_0[1:0], Bdep_0[1:0]};
-    
-    MatMul retransform_A (.in(A_outtf), .matrix(16'h8421), .out(A_retf));
-    MatMul retransform_B (.in(B_outtf), .matrix(16'h8421), .out(B_retf));
-    
-    assign A_out = A_retf ^ 4'h6;
-    assign B_out = B_retf ^ 4'h6;
+    assign A_out = a_out_tf ^ 4'h6;
+    assign B_out = b_out_tf; */
     
 endmodule
