@@ -13,10 +13,8 @@ module SBox_Sim();
     end
     
     initial begin
-               
-        Az0 = 2'd0; Az1 = 2'd0; Az2 = 2'd0; Bz0 = 2'd0; Bz1 = 2'd0; Bz2 = 2'd0; Z0 = 2'd0; Z1 = 2'd0; Z2 = 2'd0; A = 4'd0; B = 4'd0;
-        #100;
-        
+                 
+        Az0 = 2'd0; Az1 = 2'd2; Az2 = 2'd3; Bz0 = 2'd1; Bz1 = 2'd2; Bz2 = 2'd1; Z0 = 2'd2; Z1 = 2'd2; Z2 = 2'd3; A = 4'd7; B = 4'd6; #100;
         $finish;
         
     end
