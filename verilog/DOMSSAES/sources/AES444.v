@@ -15,7 +15,7 @@ module AES444 (
 	input			clk,			// Clock
 	input			rst,			// Reset   
     
-    input   [359:0] r_bits,         // Random shares           
+    input   [359:0] random_bits,    // Random shares           
     input   [63:0]  t_mask,         // Text Mask    
     input   [63:0]  k_mask,         // Key Mask
     
@@ -69,7 +69,7 @@ module AES444 (
 	wire        [63:0]  cipher_text_b;      // B-Ciphertext
 	wire        [63:0]  masked_in;          // Text_in Masked
 	wire        [63:0]  masked_k;           // Key_in Masked
-	
+	wire        [359:0] r_bits;             // Round random bits
 	
 	// ==================================================
 	// Small Scale AES - 444
@@ -203,6 +203,18 @@ module AES444 (
 				| ( round_n == 4'h8 )? 4'h5 : 4'h0
 				| ( round_n == 4'h9 )? 4'ha : 4'h0;
 
+	// Assignment of new random bits each round
+	assign r_bits  = ( round_n == 4'h0 )? random_bits : 359'h0
+				   | ( round_n == 4'h1 )? random_bits : 359'h0
+				   | ( round_n == 4'h2 )? random_bits : 359'h0
+				   | ( round_n == 4'h3 )? random_bits : 359'h0
+				   | ( round_n == 4'h4 )? random_bits : 359'h0
+				   | ( round_n == 4'h5 )? random_bits : 359'h0
+				   | ( round_n == 4'h6 )? random_bits : 359'h0
+				   | ( round_n == 4'h7 )? random_bits : 359'h0
+				   | ( round_n == 4'h8 )? random_bits : 359'h0
+				   | ( round_n == 4'h9 )? random_bits : 359'h0;
+	
 	// --------------------------------------------------
 	// SC-AES-444.Encrypt
 	// Cipher
