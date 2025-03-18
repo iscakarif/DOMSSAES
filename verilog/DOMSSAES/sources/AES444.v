@@ -3,6 +3,7 @@
 // Engineer				: Ma l Gay
 // Edited By				: Arif Iscak	 
 // Create Date			: 04/04/2018 
+// Update Date			: 18/03/2025
 // Module Name			: AES444
 // Target Device		: 
 // Description			: Domain-Oriented Masking on Small Scale AES 444
