@@ -1,11 +1,13 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Company				: ITI - Universität Stuttgart
 // Engineer				: Maël Gay
-// 
+// Edited By				: Arif Iscak 
+//
 // Create Date			: 04/04/2018 
+// Update Date			: 18/03/2025
 // Module Name			: AES444_Sim
 // Target Device		: 
-// Description			: Small Scale AES 444 - test Bench
+// Description			: Domain-Oriented Masking on Small Scale AES 444 - test Bench
 //
 // Version				: 1.0
 // Additional Comments	: 
