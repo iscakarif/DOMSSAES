@@ -1,11 +1,11 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Company				: ITI - Universit t Stuttgart
 // Engineer				: Ma l Gay
-// 
+// Edited By				: Arif Iscak	 
 // Create Date			: 04/04/2018 
 // Module Name			: AES444
 // Target Device		: 
-// Description			: Small Scale AES 444
+// Description			: Domain-Oriented Masking on Small Scale AES 444
 //
 // Version				: 1.0
 // Additional Comments	: 
