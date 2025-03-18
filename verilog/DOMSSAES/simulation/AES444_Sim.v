@@ -17,13 +17,13 @@
 
 module AES444_Sim();
  
-	reg					clk;
-	reg					rst;
+	reg			clk;
+	reg			rst;
 	
-	reg					start;
-	reg		[63:0]		key_in, k_mask;
-	reg		[63:0]		text_in, t_mask;
-	reg     [359:0]     random_bits;
+	reg			start;
+	reg	[63:0]		key_in, k_mask;
+	reg	[63:0]		text_in, t_mask;
+	reg     [359:0]     	random_bits;
 	
 	wire	[63:0]		text_out;
 	
