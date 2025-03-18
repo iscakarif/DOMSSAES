@@ -1,7 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Company				: ITI - Universit t Stuttgart
 // Engineer				: Ma l Gay
-// Edited By				: Arif Iscak	 
+// Edited By				: Arif Iscak	
+//
 // Create Date			: 04/04/2018 
 // Update Date			: 18/03/2025
 // Module Name			: AES444
@@ -16,9 +17,9 @@ module AES444 (
 	input			clk,			// Clock
 	input			rst,			// Reset   
     
-    input   [359:0] random_bits,    // Random shares           
-    input   [63:0]  t_mask,         // Text Mask    
-    input   [63:0]  k_mask,         // Key Mask
+    	input   [359:0] random_bits,    // Random shares           
+    	input   [63:0]  t_mask,         // Text Mask    
+    	input   [63:0]  k_mask,         // Key Mask
     
     
 	input			start,			// Encryption trigger
@@ -42,35 +43,35 @@ module AES444 (
 	reg			[2:0]	now_state;			// State machine register
 	reg			[2:0]	next_state;			// Next state register
 	reg			[3:0]	round_n;			// Round counter
-	reg         [1:0]   counter;            // Delay counter
+	reg         		[1:0]   counter;           	 	// Delay counter
 
 	// Key Schedule
 	reg			[63:0]	w_a;				// A-Key work register
 	reg			[63:0]	w_b;				// B-Key work register
-	wire		[3:0]	rcon;				// Round constant
-	wire		[15:0]	temp_a;				// Key-A - Temporary
-	wire		[15:0]	temp_b;				// Key-B - Temporary
-	wire		[63:0]	next_key_a;			// Next round key-A
-	wire		[63:0]	next_key_b;			// Next round key-B
+	wire			[3:0]	rcon;				// Round constant
+	wire			[15:0]	temp_a;				// Key-A - Temporary
+	wire			[15:0]	temp_b;				// Key-B - Temporary
+	wire			[63:0]	next_key_a;			// Next round key-A
+	wire			[63:0]	next_key_b;			// Next round key-B
 
 	// Encryption
-	reg         [63:0]  enc_state_a;        // A-Cipher work register
+	reg         		[63:0]  enc_state_a;        	// A-Cipher work register
 	reg			[63:0]	enc_state_b;      	// B-Cipher work register
-	wire		[3:0]	s_box[0:3][0:3];	// A-SBox
-	wire		[3:0]	s_box_b[0:3][0:3];	// B-SBox
-	wire		[3:0]	s_row[0:3][0:3];	// A-Shift rows
-	wire		[3:0]	s_row_b[0:3][0:3];	// B-Shift rows
-	wire		[3:0]	m_col[0:3][0:3];	// A-Mix columns
-	wire		[3:0]	m_col_b[0:3][0:3];	// B-Mix columns
-	wire		[63:0]	add_roundkey0;		// Initial add A-round key
-	wire		[63:0]	add_roundkey0_b;	// Initial add B-round key
-	wire		[63:0]	add_roundkey;		// Add round A-key
-	wire		[63:0]	add_roundkey_b;		// Add round B-key
-	wire		[63:0]	cipher_text;		// A-Ciphertext
-	wire        [63:0]  cipher_text_b;      // B-Ciphertext
-	wire        [63:0]  masked_in;          // Text_in Masked
-	wire        [63:0]  masked_k;           // Key_in Masked
-	wire        [359:0] r_bits;             // Round random bits
+	wire			[3:0]	s_box[0:3][0:3];	// A-SBox
+	wire			[3:0]	s_box_b[0:3][0:3];	// B-SBox
+	wire			[3:0]	s_row[0:3][0:3];	// A-Shift rows
+	wire			[3:0]	s_row_b[0:3][0:3];	// B-Shift rows
+	wire			[3:0]	m_col[0:3][0:3];	// A-Mix columns
+	wire			[3:0]	m_col_b[0:3][0:3];	// B-Mix columns
+	wire			[63:0]	add_roundkey0;		// Initial add A-round key
+	wire			[63:0]	add_roundkey0_b;	// Initial add B-round key
+	wire			[63:0]	add_roundkey;		// Add round A-key
+	wire			[63:0]	add_roundkey_b;		// Add round B-key
+	wire			[63:0]	cipher_text;		// A-Ciphertext
+	wire        		[63:0]  cipher_text_b;      	// B-Ciphertext
+	wire        		[63:0]  masked_in;          	// Text_in Masked
+	wire        		[63:0]  masked_k;           	// Key_in Masked
+	wire        		[359:0] r_bits;             	// Round random bits
 	
 	// ==================================================
 	// Small Scale AES - 444
@@ -108,7 +109,7 @@ module AES444 (
 	always @(posedge clk or posedge rst) begin
 		if ( rst ) begin
 			round_n <= 4'h0;
-			counter <= 2'h3;     // counter offset
+			counter <= 2'h3;     	// counter offset
 		end
 		else begin
 			// Round counter
@@ -116,13 +117,13 @@ module AES444 (
 			     round_n <= 4'h0;
 			end
 			else begin
-			     if ( counter == 2'b0 ) round_n <= round_n + 1'b1;   // allocating more cycles per round
+			     if ( counter == 2'b0 ) round_n <= round_n + 1'b1;   	// allocating more cycles per round
 			end
 		end
 	end
     
     always @( posedge clk ) begin
-        counter = counter + 1'b1;       // 4-bit counter to manage timing
+        counter = counter + 1'b1;       	// 4-bit counter to manage timing
     end
     
 	// Output
@@ -133,7 +134,7 @@ module AES444 (
 	// --------------------------------------------------
 	always @(posedge clk or posedge rst) begin
 		if ( rst ) begin
-			w_a <= {64{1'b0}};	// Cipher Round Key register
+			w_a <= {64{1'b0}};		// Cipher Round Key register
 			w_b <= {64{1'b0}}; 
 		end
 		else begin
@@ -254,25 +255,25 @@ module AES444 (
 	// --------------------------------------------------
 	// Input Masking
 	// --------------------------------------------------
-    assign masked_in = text_in ^ t_mask;
-    assign masked_k = key_in ^ k_mask;
+    	assign masked_in = text_in ^ t_mask;
+    	assign masked_k = key_in ^ k_mask;
     
 	// --------------------------------------------------
 	// SubBytes Transformation
 	// --------------------------------------------------
 	
 	wire[63:0] sbox_a, sbox_b; 
-    SubText ste (.clk(clk), .a(enc_state_a), .b(enc_state_b), .aq(sbox_a), .bq(sbox_b), .az(r_bits[167:72]), .bz(r_bits[263:168]), .z(r_bits[359:264]));
+    	SubText ste (.clk(clk), .a(enc_state_a), .b(enc_state_b), .aq(sbox_a), .bq(sbox_b), .az(r_bits[167:72]), .bz(r_bits[263:168]), .z(r_bits[359:264]));
     
-    assign s_box[0][0] = sbox_a[63:60];     assign s_box[0][1] = sbox_a[47:44];     assign s_box[0][2] = sbox_a[31:28];     assign s_box[0][3] = sbox_a[15:12];
-    assign s_box[1][0] = sbox_a[59:56];     assign s_box[1][1] = sbox_a[43:40];     assign s_box[1][2] = sbox_a[27:24];     assign s_box[1][3] = sbox_a[11:08];
-    assign s_box[2][0] = sbox_a[55:52];     assign s_box[2][1] = sbox_a[39:36];     assign s_box[2][2] = sbox_a[23:20];     assign s_box[2][3] = sbox_a[07:04];
-    assign s_box[3][0] = sbox_a[51:48];     assign s_box[3][1] = sbox_a[35:32];     assign s_box[3][2] = sbox_a[19:16];     assign s_box[3][3] = sbox_a[03:00];
+    	assign s_box[0][0] = sbox_a[63:60];     assign s_box[0][1] = sbox_a[47:44];     assign s_box[0][2] = sbox_a[31:28];     assign s_box[0][3] = sbox_a[15:12];
+    	assign s_box[1][0] = sbox_a[59:56];     assign s_box[1][1] = sbox_a[43:40];     assign s_box[1][2] = sbox_a[27:24];     assign s_box[1][3] = sbox_a[11:08];
+    	assign s_box[2][0] = sbox_a[55:52];     assign s_box[2][1] = sbox_a[39:36];     assign s_box[2][2] = sbox_a[23:20];     assign s_box[2][3] = sbox_a[07:04];
+    	assign s_box[3][0] = sbox_a[51:48];     assign s_box[3][1] = sbox_a[35:32];     assign s_box[3][2] = sbox_a[19:16];     assign s_box[3][3] = sbox_a[03:00];
        
-    assign s_box_b[0][0] = sbox_b[63:60];   assign s_box_b[0][1] = sbox_b[47:44];   assign s_box_b[0][2] = sbox_b[31:28];   assign s_box_b[0][3] = sbox_b[15:12];
-    assign s_box_b[1][0] = sbox_b[59:56];   assign s_box_b[1][1] = sbox_b[43:40];   assign s_box_b[1][2] = sbox_b[27:24];   assign s_box_b[1][3] = sbox_b[11:08];
-    assign s_box_b[2][0] = sbox_b[55:52];   assign s_box_b[2][1] = sbox_b[39:36];   assign s_box_b[2][2] = sbox_b[23:20];   assign s_box_b[2][3] = sbox_b[07:04];
-    assign s_box_b[3][0] = sbox_b[51:48];   assign s_box_b[3][1] = sbox_b[35:32];   assign s_box_b[3][2] = sbox_b[19:16];   assign s_box_b[3][3] = sbox_b[03:00];
+    	assign s_box_b[0][0] = sbox_b[63:60];   assign s_box_b[0][1] = sbox_b[47:44];   assign s_box_b[0][2] = sbox_b[31:28];   assign s_box_b[0][3] = sbox_b[15:12];
+    	assign s_box_b[1][0] = sbox_b[59:56];   assign s_box_b[1][1] = sbox_b[43:40];   assign s_box_b[1][2] = sbox_b[27:24];   assign s_box_b[1][3] = sbox_b[11:08];
+    	assign s_box_b[2][0] = sbox_b[55:52];   assign s_box_b[2][1] = sbox_b[39:36];   assign s_box_b[2][2] = sbox_b[23:20];   assign s_box_b[2][3] = sbox_b[07:04];
+    	assign s_box_b[3][0] = sbox_b[51:48];   assign s_box_b[3][1] = sbox_b[35:32];   assign s_box_b[3][2] = sbox_b[19:16];   assign s_box_b[3][3] = sbox_b[03:00];
     
 	// --------------------------------------------------
 	// ShiftRows
